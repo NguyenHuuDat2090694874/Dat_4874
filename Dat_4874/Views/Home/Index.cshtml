@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Dat_4874.Models.Course>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<ul class="course">
+    @foreach (var course in Model)
+    {
+        <li>
+            <div class="date">
+                <div class="month">
+                    @course.DateTime.ToString("MM")
+                </div>
+                <div class="day">
+                    @course.DateTime.ToString("dd")
+                </div>
+            </div>
+            <div class="details">
+                <span class="lecturer">
+                    @course.Lecturer.Name
+                    <button class="btn btn-default btn-sm js-toggle-follow" data-course-id="@course.LecturerId">Follow</button>
+                </span>
+                <span class="category">
+                    @course.Category.Name
+                </span>
+                <button data-course-id="@course.iD" class="btn btn-default btn-sm js-toggle-attendance"> Going? </button>
+            </div>
+        </li>
+    }
+</ul>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $(".js-toggle-attendance").click(function (e) {
+                var button = $(e.target);
+                $.post("/api/attendances", { courseId: button.attr("data-course-id") })
+                    .done(function () {
+                        button
+                            .removeClass("btn-default")
+                            .addClass("btn-info")
+                            .text("Going");
+                })
+                .fail(function () {
+                    alert("SomeThing failed");
+                });
+            });
+            $(".js-toggle-follow").click(function (e) {
+                var button = $(e.target);
+                $.post("/api/followings", { followeeId: button.attr("data-course-id") })
+                    .done(function () {
+                        button.text("Following");
+                    })
+                    .fail(function () {
+                        alert("SomeThing failed");
+                    });
+            });              
+        });
+    </script>
+    }
